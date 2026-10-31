@@ -9,7 +9,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # Install system dependencies required by PyMuPDF (pymupdf)
-RUN apt-get update && apt-get install --no-install-recommends -y \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y --fix-missing \
     build-essential \
     libglib2.0-0 \
     libfontconfig1 \
@@ -40,7 +41,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PORT=8000
 
 # Install runtime system dependencies for PyMuPDF
-RUN apt-get update && apt-get install --no-install-recommends -y \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y --fix-missing \
     libglib2.0-0 \
     libfontconfig1 \
     libfreetype6 \
