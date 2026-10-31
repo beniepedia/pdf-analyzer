@@ -9,9 +9,38 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # Install system dependencies required by PyMuPDF (pymupdf)
+# Use retry logic and fallback mirror for GitHub Actions network instability
 RUN rm -rf /var/lib/apt/lists/* \
-    && DEBIAN_FRONTEND=noninteractive sh -c 'apt-get update -o Acquire::Retries=3 || (sleep 10 && apt-get update -o Acquire::Retries=3)' \
-    && DEBIAN_FRONTEND=noninteractive sh -c 'apt-get install --no-install-recommends -y --fix-missing build-essential libglib2.0-0 libfontconfig1 libfreetype6 libx11-6 libxext6 libxfixes3 libice6 libsm6 libxt6 librender1 libcups2 ca-certificates || (sleep 15 && apt-get install --no-install-recommends -y --fix-missing build-essential libglib2.0-0 libfontconfig1 libfreetype6 libx11-6 libxext6 libxfixes3 libice6 libsm6 libxt6 librender1 libcups2 ca-certificates)' \
+    && DEBIAN_FRONTEND=noninteractive apt-get update -o Acquire::Retries=5 \
+    || (sleep 20 && DEBIAN_FRONTEND=noninteractive apt-get update -o Acquire::Retries=5) \
+    && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y --fix-missing \
+    libglib2.0-0 \
+    libfontconfig1 \
+    libfreetype6 \
+    libx11-6 \
+    libxext6 \
+    libxfixes3 \
+    libice6 \
+    libsm6 \
+    libxt6 \
+    librender1 \
+    libcups2 \
+    ca-certificates \
+    curl \
+    || (sleep 20 && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y --fix-missing \
+    libglib2.0-0 \
+    libfontconfig1 \
+    libfreetype6 \
+    libx11-6 \
+    libxext6 \
+    libxfixes3 \
+    libice6 \
+    libsm6 \
+    libxt6 \
+    librender1 \
+    libcups2 \
+    ca-certificates \
+    curl) \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
@@ -30,8 +59,36 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 # Install runtime system dependencies for PyMuPDF
 RUN rm -rf /var/lib/apt/lists/* \
-    && DEBIAN_FRONTEND=noninteractive sh -c 'apt-get update -o Acquire::Retries=3 || (sleep 10 && apt-get update -o Acquire::Retries=3)' \
-    && DEBIAN_FRONTEND=noninteractive sh -c 'apt-get install --no-install-recommends -y --fix-missing libglib2.0-0 libfontconfig1 libfreetype6 libx11-6 libxext6 libxfixes3 libice6 libsm6 libxt6 librender1 libcups2 ca-certificates curl || (sleep 15 && apt-get install --no-install-recommends -y --fix-missing libglib2.0-0 libfontconfig1 libfreetype6 libx11-6 libxext6 libxfixes3 libice6 libsm6 libxt6 librender1 libcups2 ca-certificates curl)' \
+    && DEBIAN_FRONTEND=noninteractive apt-get update -o Acquire::Retries=5 \
+    || (sleep 20 && DEBIAN_FRONTEND=noninteractive apt-get update -o Acquire::Retries=5) \
+    && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y --fix-missing \
+    libglib2.0-0 \
+    libfontconfig1 \
+    libfreetype6 \
+    libx11-6 \
+    libxext6 \
+    libxfixes3 \
+    libice6 \
+    libsm6 \
+    libxt6 \
+    librender1 \
+    libcups2 \
+    ca-certificates \
+    curl \
+    || (sleep 20 && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y --fix-missing \
+    libglib2.0-0 \
+    libfontconfig1 \
+    libfreetype6 \
+    libx11-6 \
+    libxext6 \
+    libxfixes3 \
+    libice6 \
+    libsm6 \
+    libxt6 \
+    librender1 \
+    libcups2 \
+    ca-certificates \
+    curl) \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy installed packages from builder
