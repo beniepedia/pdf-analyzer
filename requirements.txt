@@ -4,3 +4,4 @@ pymupdf>=1.23.0
 httpx>=0.24.0
 python-dotenv>=1.0.0
 slowapi>=0.1.9
+python-multipart
