@@ -25,7 +25,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/pdf-analyzer
-          tags: type=sha,type=latest
+          tags: type=sha,type=raw,value=latest
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
