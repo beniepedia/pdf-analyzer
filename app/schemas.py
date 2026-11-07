@@ -12,6 +12,9 @@ class Base64Request(BaseModel):
 class PageDetail(BaseModel):
     page: int
     type: str
+    paper_size_mm: str | None = None
+    paper_size_inch: str | None = None
+    paper_size_standard: str | None = None
 
 
 class PDFCheckResponse(BaseModel):
@@ -19,4 +22,7 @@ class PDFCheckResponse(BaseModel):
     total_pages: int
     color_pages: int
     bw_pages: int
+    paper_size_mm: str | None = None
+    paper_size_inch: str | None = None
+    paper_size_standard: str | None = None
     details: list[PageDetail]

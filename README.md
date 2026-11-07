@@ -90,7 +90,35 @@ docker run -d --name pdf-analyzer \
 
 Semua endpoint memerlukan header `X-API-Key`.
 
-### Contoh request (curl)
+### Contoh response
+
+```json
+{
+  "source": "dokumen.pdf",
+  "total_pages": 2,
+  "color_pages": 1,
+  "bw_pages": 1,
+  "paper_size_mm": "210.0 × 297.0",
+  "paper_size_inch": "8.27 × 11.69",
+  "paper_size_standard": "Mixed",
+  "details": [
+    {
+      "page": 1,
+      "type": "CL",
+      "paper_size_mm": "210.0 × 297.0",
+      "paper_size_inch": "8.27 × 11.69",
+      "paper_size_standard": "A4"
+    },
+    {
+      "page": 2,
+      "type": "BW",
+      "paper_size_mm": "215.9 × 279.4",
+      "paper_size_inch": "8.50 × 11.00",
+      "paper_size_standard": "Letter"
+    }
+  ]
+}
+```
 
 ```bash
 curl -X POST http://localhost:8000/check/upload \
