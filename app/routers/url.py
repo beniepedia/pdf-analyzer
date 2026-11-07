@@ -36,10 +36,16 @@ async def check_pdf_url(data: UrlRequest):
                 )
 
             content_type = response.headers.get("content-type", "")
-            if "application/pdf" not in content_type:
+            allowed_content_types = ["application/pdf"]
+            if file_type in ("doc", "docx"):
+                allowed_content_types.extend([
+                    "application/msword",
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                ])
+            if content_type and content_type not in allowed_content_types:
                 raise HTTPException(
                     status_code=400,
-                    detail="URL tidak mengarah ke file PDF (Content-Type bukan application/pdf).",
+                    detail="URL tidak mengarah ke file PDF, DOC, atau DOCX (Content-Type tidak didukung).",
                 )
 
             file_content = response.content

@@ -53,10 +53,10 @@ def process_pdf_file(file_path: str, identifier: str):
 
                     if is_color:
                         color_pages += 1
-                        detail_halaman.append({"page": page_num + 1, "type": "cl"})
+                        detail_halaman.append({"page": page_num + 1, "type": "Berwarna"})
                     else:
                         bw_pages += 1
-                        detail_halaman.append({"page": page_num + 1, "type": "bw"})
+                        detail_halaman.append({"page": page_num + 1, "type": "Hitam-Putih"})
 
         return {
             "source": identifier,
