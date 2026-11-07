@@ -38,7 +38,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PORT=8000
 
-# Debian 13 (Trixie) compatible runtime libraries
+# Install runtime dependencies
 RUN apt-get update -o Acquire::Retries=5 \
     && DEBIAN_FRONTEND=noninteractive apt-get install \
        -y --no-install-recommends \
@@ -51,7 +51,7 @@ RUN apt-get update -o Acquire::Retries=5 \
        libice6 \
        libsm6 \
        libxt6 \
-       librender1 \
+       libxrender1 \
        libcups2t64 \
        ca-certificates \
        curl \
