@@ -1,13 +1,10 @@
 import base64
 import logging
 import os
-import shutil
-import subprocess
-import glob
 
 import pymupdf
 
-from app.config import LIBREOFFICE_TIMEOUT, MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB
+from app.config import MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB
 from app.utils import detect_file_type
 
 logger = logging.getLogger("pdf-analyzer")
@@ -16,9 +13,6 @@ logger = logging.getLogger("pdf-analyzer")
 class PDFProcessingError(Exception):
     """Raised when PDF processing fails."""
 
-
-class LibreOfficeError(Exception):
-    """Raised when DOC/DOCX to PDF conversion fails."""
 
 
 # ---------------------------------------------------------------------------

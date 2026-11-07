@@ -1,14 +1,17 @@
 # PDF Analyzer API
 
-API untuk mengecek halaman berwarna dan hitam-putih pada PDF via Upload File, URL, atau Base64. Mendukung file **PDF, DOC, dan DOCX** (DOC/DOCX dikonversi ke PDF via LibreOffice headless sebelum diproses).
+API untuk mengecek halaman berwarna dan hitam-putih pada PDF via Upload File, URL, atau Base64.
+
+Saat ini hanya mendukung file **PDF** (DOC/DOCX belum didukung karena membutuhkan konversi via LibreOffice).
 
 ---
 
 ## 📋 Fitur
 
-- Cek halaman berwarna vs hitam-putih pada PDF
+- Cek halaman berwarna (`CL`) vs hitam-putih (`BW`) pada PDF
+- Deteksi ukuran kertas per halaman (mm, inch, dan standar: A4, Letter, dll.)
+- Informasi ukuran kertas dominant di level root response
 - Support input: file upload (multipart), URL, Base64
-- Support format: **PDF, DOC, DOCX**
 - Autentikasi API Key (header `X-API-Key`)
 - Rate limiting (10 request/menit per IP)
 - SSRF protection (blokir localhost + private IP)
@@ -39,7 +42,6 @@ API_KEY_1=rahasia-api-key-1
 API_KEY_2=rahasia-api-key-2
 MAX_FILE_SIZE_MB=15
 ALLOWED_ORIGINS=https://backend-perusahaan.com
-LIBREOFFICE_TIMEOUT=120
 ```
 
 ### 3. Install dependency
@@ -83,9 +85,9 @@ docker run -d --name pdf-analyzer \
 
 | Endpoint | Metode | Deskripsi | Format |
 |----------|--------|-----------|--------|
-| `/check/upload` | POST | Upload file | PDF, DOC, DOCX |
-| `/check/url` | POST | Download dari URL | PDF, DOC, DOCX |
-| `/check/base64` | POST | Decode Base64 | PDF, DOC, DOCX |
+| `/check/upload` | POST | Upload file | PDF |
+| `/check/url` | POST | Download dari URL | PDF |
+| `/check/base64` | POST | Decode Base64 | PDF |
 | `/health` | GET | Health check | — |
 
 Semua endpoint memerlukan header `X-API-Key`.
@@ -120,6 +122,15 @@ Semua endpoint memerlukan header `X-API-Key`.
 }
 ```
 
+| Field | Deskripsi | Contoh |
+|-------|-----------|--------|
+| `type` | `CL` = Berwarna, `BW` = Hitam-Putih | `CL` |
+| `paper_size_mm` | Ukuran kertas dalam milimeter (lebar × tinggi) | `"210.0 × 297.0"` |
+| `paper_size_inch` | Ukuran kertas dalam inchi (lebar × tinggi) | `"8.27 × 11.69"` |
+| `paper_size_standard` | Standar kertas jika sama semua halaman, `"Mixed"` jika berbeda, atau `null` | `"A4"` |
+
+### Contoh request (curl)
+
 ```bash
 curl -X POST http://localhost:8000/check/upload \
   -H "X-API-Key: rahasia-api-key-1" \
@@ -142,6 +153,14 @@ curl -X POST http://localhost:8000/check/base64 \
 
 ---
 
+## ⚠️ Catatan Penting
+
+- **DOC dan DOCX belum didukung.** Saat ini hanya file PDF yang dapat diproses.
+- Jika Anda mengunggah file `.doc` atau `.docx`, API akan merespons error 400.
+- Untuk memproses DOC/DOCX, file harus dikonversi ke PDF terlebih dahulu sebelum diunggah.
+
+---
+
 ## 🔐 Konfigurasi Keamanan
 
 | Variabel | Deskripsi |
@@ -150,7 +169,6 @@ curl -X POST http://localhost:8000/check/base64 \
 | `API_KEY_2` | API Key cadangan |
 | `MAX_FILE_SIZE_MB` | Maksimal ukuran file (default: 15) |
 | `ALLOWED_ORIGINS` | Domain yang diizinkan CORS (pisahkan koma) |
-| `LIBREOFFICE_TIMEOUT` | Batas waktu konversi DOC/DOCX (detik, default: 120) |
 
 ---
 
@@ -189,7 +207,7 @@ pdf-analyzer/
 │   ├── security.py       # API Key + SSRF protection
 │   ├── schemas.py        # Pydantic models
 │   ├── utils.py          # Helper (temp file, detect type, cleanup)
-│   ├── services.py       # PDF processing + LibreOffice conversion
+│   ├── services.py       # PDF processing
 │   └── routers/
 │       ├── upload.py     # POST /check/upload
 │       ├── url.py        # POST /check/url

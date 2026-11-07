@@ -5,7 +5,7 @@ from fastapi.concurrency import run_in_threadpool
 from app.config import MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB
 from app.security import verify_api_key, is_ssrf_safe
 from app.schemas import UrlRequest, PDFCheckResponse
-from app.services import process_pdf_file, convert_doc_to_pdf, PDFProcessingError, LibreOfficeError
+from app.services import process_pdf_file, PDFProcessingError
 from app.utils import secure_temp_path, detect_file_type, cleanup_temp_files
 
 router = APIRouter()
@@ -24,7 +24,6 @@ async def check_pdf_url(data: UrlRequest):
         )
 
     temp_doc_path = None
-    temp_pdf_path = None
 
     try:
         async with httpx.AsyncClient() as client:
@@ -36,16 +35,10 @@ async def check_pdf_url(data: UrlRequest):
                 )
 
             content_type = response.headers.get("content-type", "")
-            allowed_content_types = ["application/pdf"]
-            if file_type in ("doc", "docx"):
-                allowed_content_types.extend([
-                    "application/msword",
-                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                ])
-            if content_type and content_type not in allowed_content_types:
+            if content_type and "application/pdf" not in content_type:
                 raise HTTPException(
                     status_code=400,
-                    detail="URL tidak mengarah ke file PDF, DOC, atau DOCX (Content-Type tidak didukung).",
+                    detail="URL tidak mengarah ke file PDF \(Content-Type bukan application/pdf\)\.",
                 )
 
             file_content = response.content
@@ -62,12 +55,6 @@ async def check_pdf_url(data: UrlRequest):
                 with open(temp_doc_path, "wb") as f:
                     f.write(file_content)
                 pdf_path = temp_doc_path
-            elif file_type in ("doc", "docx"):
-                temp_doc_path = secure_temp_path(suffix=f".{file_type}")
-                with open(temp_doc_path, "wb") as f:
-                    f.write(file_content)
-                pdf_path = convert_doc_to_pdf(temp_doc_path)
-                temp_pdf_path = pdf_path
             else:
                 raise HTTPException(status_code=400, detail="Format file tidak didukung")
 
@@ -75,7 +62,6 @@ async def check_pdf_url(data: UrlRequest):
         return result
     except PDFProcessingError as e:
         raise HTTPException(status_code=500, detail="Gagal memproses PDF")
-    except LibreOfficeError as e:
-        raise HTTPException(status_code=500, detail="Gagal mengonversi dokumen ke PDF")
     finally:
-        cleanup_temp_files(temp_doc_path, temp_pdf_path)
+        cleanup_temp_files(temp_doc_path)
+
