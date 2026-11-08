@@ -29,3 +29,11 @@ BLOCKED_NETWORKS = [
     ip_network("::1/128"),        # IPv6 localhost
     ip_network("fc00::/7"),       # IPv6 unique local
 ]
+
+# Toleransi perbedaan channel RGB untuk deteksi warna (0 = ketat, 10 = rekomendasi)
+# Piksel dianggap B&W jika max(R,G,B) - min(R,G,B) <= COLOR_TOLERANCE
+COLOR_TOLERANCE = int(os.getenv("COLOR_TOLERANCE", "10"))
+
+# Persentase minimum piksel berwarna pada halaman agar dianggap CL (Berwarna)
+# Jika persentase piksel berwarna di bawah nilai ini, halaman dianggap BW
+COLOR_PIXEL_THRESHOLD = float(os.getenv("COLOR_PIXEL_THRESHOLD", "1.0"))

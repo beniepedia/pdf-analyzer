@@ -169,6 +169,8 @@ curl -X POST http://localhost:8000/check/base64 \
 | `API_KEY_2` | API Key cadangan |
 | `MAX_FILE_SIZE_MB` | Maksimal ukuran file (default: 15) |
 | `ALLOWED_ORIGINS` | Domain yang diizinkan CORS (pisahkan koma) |
+| `COLOR_TOLERANCE` | Toleransi perbedaan channel RGB untuk deteksi warna (default: 10). Semakin tinggi, semakin longgar dalam dianggap "abu-abu". |
+| `COLOR_PIXEL_THRESHOLD` | Persentase minimum piksel berwarna pada halaman agar dianggap CL (default: 1.0). Jika persentase di bawah nilai ini, halaman dianggap BW. |
 
 ---
 

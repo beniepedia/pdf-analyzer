@@ -4,7 +4,7 @@ import os
 
 import pymupdf
 
-from app.config import MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB
+from app.config import COLOR_PIXEL_THRESHOLD, COLOR_TOLERANCE, MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB
 from app.utils import detect_file_type
 
 logger = logging.getLogger("pdf-analyzer")
@@ -85,19 +85,21 @@ def process_pdf_file(file_path: str, identifier: str):
                         "paper_size_standard": paper_standard,
                     })
                 else:
-                    is_color = False
-                    step_y = max(1, pix.h // 20)
-                    step_x = max(1, pix.w // 20)
+                    colored_count = 0
+                    total_sampled = 0
+                    step_y = max(1, pix.h // 50)
+                    step_x = max(1, pix.w // 50)
 
                     for y in range(0, pix.h, step_y):
                         for x in range(0, pix.w, step_x):
+                            total_sampled += 1
                             pixel = pix.pixel(x, y)
                             r, g, b = pixel[0], pixel[1], pixel[2]
-                            if not (r == g == b):
-                                is_color = True
-                                break
-                        if is_color:
-                            break
+                            if max(r, g, b) - min(r, g, b) > COLOR_TOLERANCE:
+                                colored_count += 1
+
+                    color_percentage = (colored_count / total_sampled * 100) if total_sampled > 0 else 0
+                    is_color = color_percentage >= COLOR_PIXEL_THRESHOLD
 
                     if is_color:
                         color_pages += 1
